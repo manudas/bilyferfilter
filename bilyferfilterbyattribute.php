@@ -49,12 +49,21 @@ class Bilyferfilterbyattribute extends Module
 
 	public function install()
 	{
-		if (!parent::install() || !$this->registerHook('actionProductListOverride'))
+		if (!parent::install() || !$this->registerHook('actionProductListOverride')
+				|| !$this->registerHook('aboveProductList'))
 			return false;
 		return true;
 	}
 
-	public function actionProductListOverride ($params) {
+	public function hookAboveProductList() {
+
+		
+				//return $this->display( _PS_MODULE_DIR_.'bilyferfilterbyattribute/views/templates/hook/product-sort.tpl');
+// return $this->display('/var/www/html/ps16/modules/bilyferfilterbyattribute/views/templates/hook/product-sort.tpl');
+		return $this->display(__FILE__, 'product-sort-bilyfer.tpl');
+	}
+
+	public function hookActionProductListOverride ($params) {
 		/* ESTRUCTURA DEL HOOK
 		Hook::exec('actionProductListOverride', array(
             'nbProducts'   => &$this->nbProducts,
@@ -74,7 +83,7 @@ class Bilyferfilterbyattribute extends Module
         }
 
 		*/
-
+/*
 		$id_category = Tools::getValue('id_category');
 		$category = new Category($id_category);
 
@@ -82,7 +91,10 @@ class Bilyferfilterbyattribute extends Module
 
         $params['cat_products'] = $category->getProducts($this->context->language->id, (int)$this->p, (int)$this->n, $this->orderBy, $this->orderWay);
         $filter_by_material = Tool::getValue();
+
+*/
 	}
+
 	public function uninstall()
 	{
 		if (!parent::uninstall())
