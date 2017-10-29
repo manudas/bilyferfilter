@@ -57,7 +57,15 @@ class Bilyferfilterbyattribute extends Module
 
 	public function hookAboveProductList() {
 
-		
+	    $current_language = $this->context->language->id;
+
+	    $attribute_groups = AttributeGroup::getAttributesGroups($current_language);
+	    foreach ($attribute_groups as &$attribute_group) {
+	        $attributes = AttributeGroup::getAttributes($current_language, $attribute_group['id_attribute_group']);
+            $attribute_group['attributes'] = $attributes;
+	    }
+
+		$this -> smarty -> assign(array('attribute_groups' => $attribute_groups));
 				//return $this->display( _PS_MODULE_DIR_.'bilyferfilterbyattribute/views/templates/hook/product-sort.tpl');
 // return $this->display('/var/www/html/ps16/modules/bilyferfilterbyattribute/views/templates/hook/product-sort.tpl');
 		return $this->display(__FILE__, 'product-sort-bilyfer.tpl');
