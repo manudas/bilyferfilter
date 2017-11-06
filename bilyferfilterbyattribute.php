@@ -32,6 +32,9 @@ class Bilyferfilterbyattribute extends Module
 
 	public function __construct()
 	{
+        $this->ps_versions_compliancy = array('min' => '1.6.0', 'max' => '1.6.9'); // PREGUNTAR A MANU ANTES DE ACTUALIZAR
+        $this->dependencies = array('blocklayered'); // REQUISITO PARA INSTALAR ESTE MODULO
+
 		$this->name = 'bilyferfilterbyattribute';
 		$this->tab = 'front_office_features';
 		$this->version = '1.0.0';
@@ -107,7 +110,6 @@ class Bilyferfilterbyattribute extends Module
     {
 
         $availabe_att_groups = Tools::getValue('filterByAttributeGroup');
-        $result_cat_products = array();
 
         $attribute_list = array();
         foreach ($availabe_att_groups as $id_att_group => $attribute_value_to_filter_by) {
@@ -115,22 +117,49 @@ class Bilyferfilterbyattribute extends Module
                 continue;
             }
             else {
-                $attribute_list[] = $attribute_value_to_filter_by;
+                $attribute_list[$id_att_group] = $attribute_value_to_filter_by;
             }
         }
 
         if (!empty($attribute_list)) {
+            $result_cat_products = array();
             foreach ($product_list as $product) {
-                $product_obj = new Product($product['id_product']);
-                if ($product_obj->productAttributeExists($attribute_list)) {
+                $has_attribute = true;
+                foreach ($attribute_list as $att_group_id_filter => $att_id_filter){
+                    $has_attribute &= $this -> productHasAttribute($att_group_id_filter, $att_id_filter, $product['id_product']);
+                    /*
+                    if ($has_attribute == true) {
+                        $result_cat_products[] = $product;
+                        continue 2; // the same as break (sale de este for y continua con el anterior)
+                    }
+                    */
+                    if (!$has_attribute) {
+                        break;
+                    }
+                }
+                if ($has_attribute) {
                     $result_cat_products[] = $product;
                 }
             }
+        }
+        else {
+            $result_cat_products = $product_list;
         }
 
         return $result_cat_products;
     }
 
+
+    private function productHasAttribute($attribute_group_id, $attribute_id, $product_id) {
+        $product_attributes = Product::getAttributesInformationsByProduct(intval($product_id));
+        // $product_attributes = ‌‌Product::getAttributesInformationsByProduct(intval($product_id));
+        foreach ($product_attributes as $attribute){
+            if (($attribute['id_attribute_group'] == $attribute_group_id) && ($attribute['id_attribute'] == $attribute_id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	public function hookActionProductListOverride ($params)
     {

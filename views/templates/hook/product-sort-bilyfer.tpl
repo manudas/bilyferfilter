@@ -45,24 +45,32 @@
 
 
 			// $sort_form = $("productsSortForm{if isset($paginationId)}_{$paginationId}{/if}");
+
+            $("#submit_button_bilyfer_filter_by_attribute").on('click', function() {
+                reloadContent('&forceSlide&'+serialized_data);
+            });
+
+            $(".bilyfer_filtering_selector").on('change', function() {
+                serialized_data = $('#productsSortFormByAttribute{if isset($paginationId)}_{$paginationId}{/if}').serialize();
+            });
 		});
 
 	</script>
     {*$attribute_groups|var_dump*}
 	{foreach $attribute_groups as $grupo_atributo}
         {*$grupo_atributo|var_dump*}
-		<select id="filterByAttributeGroup_{$grupo_atributo.id_attribute_group}" class="selectProdu...ctSort form-cont...rol" name="filterByAttributeGroup[{$grupo_atributo['id_attribute_group']}]">
-			<option value="">---</option>
+		<select id="filterByAttributeGroup_{$grupo_atributo.id_attribute_group}" class="bilyfer_filtering_selector selectProduct.Sort for.m-control" name="filterByAttributeGroup[{$grupo_atributo['id_attribute_group']}]">
+			<option value="">{$grupo_atributo.name}</option>
 			{foreach $grupo_atributo.attributes as $single_atributo}
                 {*$single_atributo|var_dump*}
-				<option value="{$single_atributo.id_attribute}" {if $orderby eq 'reference' AND $orderway eq 'asc'}selected="selected"{/if}>{$single_atributo.name}</option>
+				<option value="{$single_atributo.id_attribute}" {*if $orderby eq 'reference' AND $orderway eq 'asc'}selected="selected"{/if*}>{$single_atributo.name}</option>
 
             {/foreach}
 
 		</select>
 	
 	{/foreach}
-	<button type="submit">{l s='Filter' mod='bilyferfilterbyattribute'}</button>
+	<button id="submit_button_bilyfer_filter_by_attribute" type="button">{l s='Filter' mod='bilyferfilterbyattribute'}</button>
 
 </form>
 
